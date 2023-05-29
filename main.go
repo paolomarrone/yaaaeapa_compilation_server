@@ -69,7 +69,8 @@ func handleFilesInForm(w http.ResponseWriter, r *http.Request) {
     out, err := cmd.Output()
     if err != nil {
         log.Println("Could not run command: ", err)
-        w.Header().Set("Compilation-log", string(err.Error()))
+        log.Println("Output: ", string(out))
+        w.Header().Set("Compilation-log", string(err.Error()) + "\n" + string(out))
         unsuccess(w)
         return
     }
@@ -80,7 +81,7 @@ func handleFilesInForm(w http.ResponseWriter, r *http.Request) {
     if err != nil {
         log.Println("Could not read the output", err)
         w.Header().Set("Compilation-result", "failed")
-        unsuccess()
+        unsuccess(w)
         return
     }
     w.Header().Set("Compilation-result", "ok")
