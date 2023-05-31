@@ -30,15 +30,14 @@ import (
     "encoding/json"
 )
 
+const address = ":10002"
+
 func main() {
  
-    server := http.Server{
-        Handler: http.HandlerFunc(handler),
-        Addr: ":10002",
-    }
-
+    http.HandleFunc("/", handler)
+    
     log.Println("Starting yaaaeapa compilation server")
-    log.Println(server.ListenAndServe())
+    log.Println(http.ListenAndServeTLS(address, "./keys/localhost.crt", "./keys/localhost.key", nil))
 }
 
 func handler(w http.ResponseWriter, r *http.Request) {
