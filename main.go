@@ -43,14 +43,27 @@ func main() {
 func handler(w http.ResponseWriter, r *http.Request) {
     switch r.URL.Path {
     case "/uploadfiles":
-        handleFilesInForm(w, r)
+        handleUploadFiles(w, r)
     default:
         w.WriteHeader(http.StatusNotFound)
         w.Write([]byte("Not Found"))
     }
 }
 
-func handleFilesInForm(w http.ResponseWriter, r *http.Request) {
+func handleUploadFiles(w http.ResponseWriter, r *http.Request) {
+
+    arch := r.Header.Get("Target-Arch")
+    var compiler = ""
+    if arch == "arm64" {
+        compiler = "aarch64-linux-gnu-gcc "
+    } else if arch == "x86_64" {
+        compiler = "gcc "
+    } else {
+        w.WriteHeader(500)
+        w.Write([]byte("Arch not supported\n"))
+        return
+    }
+
 
     tmpdirpath, err := os.MkdirTemp("", "yaaaeapa_")
     if err != nil {
@@ -60,9 +73,10 @@ func handleFilesInForm(w http.ResponseWriter, r *http.Request) {
 
     var files []map[string]interface{}
 
-    respBody, _ := ioutil.ReadAll(r.Body)
 
-    err = json.Unmarshal(respBody, &files)
+    reqBody, _ := ioutil.ReadAll(r.Body)
+
+    err = json.Unmarshal(reqBody, &files)
 
     if err != nil {
         http.Error(w, err.Error(), http.StatusBadRequest)
@@ -83,7 +97,7 @@ func handleFilesInForm(w http.ResponseWriter, r *http.Request) {
     }
 
     log.Println("Going to compile")
-    cmd := exec.Command("./compile.sh", tmpdirpath)
+    cmd := exec.Command("./compile.sh", compiler, tmpdirpath)
     out, err := cmd.Output()
     if err != nil {
         log.Println("Could not run command: ", err)

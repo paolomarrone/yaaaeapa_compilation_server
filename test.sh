@@ -1,4 +1,5 @@
-#!/bin/sh
+#!/bin/bash
 
-#curl localhost:10002/uploadfiles -F file0=@/home/lallero/Orastron/Zampogna/examples/amplifier/build/yaaaeapa/amp.h -F file1=@/home/lallero/Orastron/Zampogna/examples/amplifier/build/yaaaeapa/amp.c -F file2=@/home/lallero/Orastron/Zampogna/examples/amplifier/build/yaaaeapa/amp_yaaaeapa_wrapper.c --output built.so
+export NODE_TLS_REJECT_UNAUTHORIZED='0'
 
+./test.js
